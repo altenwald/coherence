@@ -214,7 +214,10 @@ defmodule Coherence.TrackableService do
 
   defp last_at_and_ip(conn, schema) do
     now = NaiveDateTime.utc_now()
-    ip = Plug.Conn.get_peer_data(conn) |> Map.get(:address) |> inspect()
+    ip = Plug.Conn.get_peer_data(conn)
+         |> Map.get(:address)
+         |> check_x_forwarded_for(conn)
+         |> ip2str()
     cond do
       is_nil(schema.last_sign_in_at) and is_nil(schema.current_sign_in_at) ->
         {now, ip, ip, now}
@@ -222,6 +225,21 @@ defmodule Coherence.TrackableService do
         {schema.current_sign_in_at, schema.current_sign_in_ip, ip, now}
       true ->
         {schema.last_sign_in_at, schema.last_sign_in_ip, ip, now}
+    end
+  end
+
+  defp ip2str(remote_ip) do
+    remote_ip
+    |> :inet_parse.ntoa()
+    |> to_string()
+  end
+
+  defp check_x_forwarded_for(real_ip, conn) do
+    case Plug.Conn.get_req_header(conn, "x-forwarded-for") do
+      [] -> real_ip
+      [ip|_] ->
+        {:ok, tuple_ip} = :inet_parse.address(to_charlist(ip))
+        tuple_ip
     end
   end
 
