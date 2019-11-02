@@ -7,8 +7,6 @@
 [license-img]: http://img.shields.io/badge/license-MIT-brightgreen.svg
 [license]: http://opensource.org/licenses/MIT
 
-> This version is not compatible with previous Phoenix 1.3.0-rc versions. Please use the v0.4.0 version instead.
-
 Checkout the [Coherence Demo Project](https://github.com/smpallen99/coherence_demo) to see an example project using Coherence.
 
 Coherence is a full featured, configurable authentication system for Phoenix, with the following modules:
@@ -37,7 +35,7 @@ See the [Docs](https://hexdocs.pm/coherence/Coherence.html) and [Wiki](https://g
 
       ```elixir
       def deps do
-        [{:coherence, "~> 0.5"}]
+        [{:coherence, "~> 0.6"}]
       end
       ```
 
@@ -75,13 +73,6 @@ For projects created with `mix phx.new`, use the following mix tasks:
 For projects created with `mix phx.new --umbrella`, ensure you are in the app directory and use the following options for the install:
 * `cd apps/my_project`
 * `coh.install --web-module MyProjectWeb --web-path ../my_project_web/lib/my_project_web`
-
-And for projects created with `mix phoenix.new`, use the following:
-
-* `coherence.install`
-* `coh.clean`
-
-The documentation below assumes a phx project. If you are working with a phoenix project, replace `mix coh.task` with `mix coherence.task`.
 
 ## Getting Started
 
@@ -238,7 +229,8 @@ end
 {:unlock_token_expire_minutes, 5},
 {:rememberable_cookie_expire_hours, 2*24},
 {:forwarded_invitation_fields, [:email, :name]}
-{:allow_silent_password_recovery_for_unknown_user, false}
+{:allow_silent_password_recovery_for_unknown_user, false},
+{:password_hashing_alg, Comeonin.Bcrypt}
 ```
 
 You can override this default configs. For example: you can add the following codes inside `config/config.exs`
@@ -553,7 +545,6 @@ Also, checkout the Coherence.Config module for a list of config items you can us
 By default, controller boilerplate is not generated. To add controllers, use the controller generators.
 
 * For phx projects, use the `mix coh.gen.controllers` task.
-* For phoenix projects, use the `mix coherence.gen.controllers` task.
 
 The generated controllers are named `MyProjectWeb.Coherence.SessionController` as an example. Generated controllers are located in `lib/my_project_web/controllers/coherence/`
 
@@ -581,6 +572,12 @@ defmodule MyProjectWeb.Router do
   # ...
 end
 ```
+
+As of Coherence v0.6.0, the generated controller modules have very little code. All the controller actions and helper functions are included with a `use xxxControllerBase` call.
+
+To change an action, simply define the appropriate function and add your own implementation. You may want to copy over the implementation found in your projects `deps/coherence/lib/coherence/controllers/xxx_controller_base.ex` file as a starting point and customize it as needed.
+
+Alternatively, if can create the action, handle some specify behavior and call `super(conn, params)` so invoke the default action. Depending on your customization, this may be the best approach since its easier to see how changes when upgrading to new versions of Coherence.
 
 ### Customizing Routes
 
@@ -700,6 +697,79 @@ The list of controller actions are:
 * :registration
 * :session
 * :unlock
+
+## Customizing Password Hashing Algorithm
+
+Coherence uses the `Bcrypt` algorithm by default for hashing passwords. However, with the update to Comeonin 4.0, you can now change the hashing algorithm.
+
+Comeonin currently supports the following 3 algorithms:
+
+* [Argon2](https://github.com/riverrun/argon2_elixir)
+* [Bcrypt](https://github.com/riverrun/bcrypt_elixir)
+* [Pbkdf2](https://github.com/riverrun/pbkdf2_elixir)
+
+### Change the Hashing Algorithm in an Existing Project
+
+To change the default in an existing project (to Argon2 for example), make the following 2 changes:
+
+* Edit your `config/config.exs` file add/change the following line:
+
+```elixir
+# config/config.exs
+config :coherence,
+  # ...
+  password_hashing_alg: Comeonin.Argon2,
+  # ...
+```
+
+* add the dependency to `mix.exs`
+
+```elixir
+  # mix.exs
+  defp deps do
+    [
+      # ...
+      {:argon2_elixir, "~> 1.3"}
+    ]
+  end
+```
+
+### Change the Hashing Algorithm in an Existing Project
+
+To install Coherence in a new project with the `Pbkdf2` hashing algorithm (with the --full option for example):
+
+```bash
+# mix coh.install --full --password-hashing-alg=Comeonin.Argon2
+```
+
+and add the dependency
+
+```elixir
+  # mix.exs
+  defp deps do
+    [
+      # ...
+      {:pbkdf2_elixir, "~> 0.12"}
+    ]
+  end
+```
+
+### Speed up Tests and Database Seeding of Users
+
+The default hashing algorithms are setup for production use. They are very slow by design which can cause very slow tests and database seeding in the dev and test environments. To speed this up, you can add the following to you `config/dev.exs` and/or `config/test.exs` configuration.
+
+However, *DON'T  USE THESE SETTINGS IN PRODUCTION*
+
+```elixir
+# config/test.exs
+config :argon2_elixir,
+  t_cost: 1,
+  m_cost: 8
+config :bcrypt_elixir, log_rounds: 4
+config :pbkdf2_elixir, rounds: 1
+```
+
+Note: Only configure the algorithm you have configured!
 
 ## Accessing the Currently Logged In User
 

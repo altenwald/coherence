@@ -21,6 +21,7 @@ config :coherence, TestCoherence.Repo,
 
 config :coherence,
   user_schema: TestCoherence.User,
+  password_hashing_alg: Comeonin.Bcrypt,
   repo: TestCoherence.Repo,
   router: TestCoherenceWeb.Router,
   module: TestCoherence,
@@ -30,10 +31,31 @@ config :coherence,
   logged_out_url: "/",
   email_from_name: "Your Name",
   email_from_email: "yourname@example.com",
-  opts: [:confirmable, :authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token, :invitable, :registerable, :rememberable],
-  registration_permitted_attributes: ["email","name","password", "password_confirmation","current_password"],
-  invitation_permitted_attributes: ["name","email"],
-  password_reset_permitted_attributes: ["reset_password_token","password","password_confirmation"],
-  session_permitted_attributes: ["remember","email", "password"],
+  opts: [
+    :confirmable,
+    :authenticatable,
+    :recoverable,
+    :lockable,
+    :trackable,
+    :unlockable_with_token,
+    :invitable,
+    :registerable,
+    :rememberable
+  ],
+  registration_permitted_attributes: [
+    "email",
+    "name",
+    "password",
+    "password_confirmation",
+    "current_password"
+  ],
+  invitation_permitted_attributes: ["name", "email"],
+  password_reset_permitted_attributes: [
+    "reset_password_token",
+    "password",
+    "password_confirmation"
+  ],
+  session_permitted_attributes: ["remember", "email", "password"],
   confirm_email_updates: true
 
+config :bcrypt_elixir, log_rounds: 4
