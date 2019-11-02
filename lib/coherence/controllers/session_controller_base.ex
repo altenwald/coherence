@@ -394,6 +394,11 @@ defmodule Coherence.SessionControllerBase do
             |> save_login_cookie(id, series, new_token, opts)
             |> assign(:remembered, true)
 
+          user = Config.repo.one(from u in Config.user_schema(), where: u.id == ^id)
+          conn = 
+            Config.auth_module()
+            |> apply(Config.create_login(), [conn, user, [id_key: Config.schema_key()]])
+
           {conn, user}
         end
       end

@@ -165,10 +165,12 @@ defmodule Coherence.RegistrationControllerBase do
       """
       @spec update(conn, params) :: conn
       def delete(conn, params) do
-        user = Coherence.current_user(conn)
-        conn = Controller.logout_user(conn)
-        @schemas.delete!(user)
-        respond_with(conn, :registration_delete_success, %{params: params})
+        conn = Helpers.logout_user(conn)
+        redirect(conn, to: "/")
+        # user = Coherence.current_user(conn)
+        # conn = Controller.logout_user(conn)
+        # @schemas.delete!(user)
+        # respond_with(conn, :registration_delete_success, %{params: params})
       end
 
       defoverridable(

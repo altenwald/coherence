@@ -97,11 +97,16 @@ defmodule CoherenceTest.Schema do
 
     refute cs.valid?
 
-    assert cs.errors == [
+    assert (cs.errors == [
              password:
                {"should be at least %{count} character(s)",
-                [count: 4, validation: :length, min: 4]}
-           ]
+                [count: 4, validation: :length, kind: :min]}
+           ]) || (
+            cs.errors == [
+              password:
+                {"should be at least %{count} character(s)",
+                 [count: 4, validation: :length, kind: :min, type: :string]}
+            ]) 
   end
 
   test "checkpw" do
