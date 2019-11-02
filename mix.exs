@@ -29,7 +29,6 @@ defmodule Coherence.Mixfile do
       mod: {Coherence, []},
       applications: [
         :logger,
-        :comeonin,
         :ecto_sql,
         :elixir_uuid,
         :phoenix_swoosh,
@@ -47,7 +46,6 @@ defmodule Coherence.Mixfile do
   defp deps do
     [
       {:ecto_sql, "~> 3.0"},
-      {:comeonin, "~> 5.1.2"},
       {:bcrypt_elixir, "~> 2.0.3"},
       {:phoenix, "~> 1.4.9"},
       {:phoenix_html, "~> 2.12"},
