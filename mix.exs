@@ -7,7 +7,7 @@ defmodule Coherence.Mixfile do
     [
       app: :coherence,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
@@ -27,16 +27,7 @@ defmodule Coherence.Mixfile do
   def application do
     [
       mod: {Coherence, []},
-      applications: [
-        :logger,
-        :ecto_sql,
-        :elixir_uuid,
-        :phoenix_swoosh,
-        :tzdata,
-        :plug,
-        :phoenix,
-        :phoenix_html
-      ]
+      extra_applications: [:logger, :tzdata]
     ]
   end
 
@@ -45,22 +36,22 @@ defmodule Coherence.Mixfile do
 
   defp deps do
     [
-      {:ecto_sql, "~> 3.0"},
-      {:bcrypt_elixir, "~> 2.0.3"},
-      {:phoenix, "~> 1.4.9"},
-      {:phoenix_html, "~> 2.12"},
-      {:gettext, "~> 0.14"},
+      {:ecto_sql, "~> 3.5"},
+      {:bcrypt_elixir, "~> 2.2"},
+      {:phoenix, "~> 1.5"},
+      {:phoenix_html, "~> 2.14"},
+      {:gettext, "~> 0.18"},
       {:elixir_uuid, "~> 1.2"},
-      {:phoenix_swoosh, "~> 0.2"},
-      {:timex, "~> 3.6.1"},
-      {:floki, "~> 0.19", only: :test},
-      {:ex_doc, "~> 0.18.0", only: :dev},
-      {:earmark, "~> 1.2", only: :dev, override: true},
-      {:postgrex, "~> 0.14.0", only: :test},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-      {:credo, "~> 0.8", only: [:dev, :test]},
-      {:plug, " ~> 1.8.3"},
-      {:jason, "~> 1.0"}
+      {:phoenix_swoosh, "~> 0.3"},
+      {:timex, "~> 3.6"},
+      {:floki, "~> 0.29", only: :test},
+      {:ex_doc, "~> 0.23", only: :dev},
+      {:earmark, "~> 1.4", only: :dev, override: true},
+      {:postgrex, ">= 0.0.0", only: :test},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:credo, "~> 1.4", only: [:dev, :test]},
+      {:plug, "~> 1.10"},
+      {:jason, "~> 1.2"}
     ]
   end
 

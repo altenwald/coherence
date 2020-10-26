@@ -67,7 +67,7 @@ defmodule Coherence.RegistrationControllerBase do
               Schema.permitted_attributes_default(:registration)
           )
         )
-        |> @schemas.create
+        |> @schemas.create()
         |> case do
           {:ok, user} ->
             conn

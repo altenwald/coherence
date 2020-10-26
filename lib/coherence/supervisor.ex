@@ -24,12 +24,11 @@ defmodule Coherence.Supervisor do
       ]
       |> build_children(Config.has_option(:rememberable))
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
   defp build_children(children, true) do
-    import Supervisor.Spec
-    [worker(Coherence.RememberableServer, []) | children]
+    [Coherence.RememberableServer | children]
   end
 
   defp build_children(children, _), do: children

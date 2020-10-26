@@ -6,6 +6,9 @@ defmodule Coherence.RememberableServer do
   @name __MODULE__
 
   @doc false
+  def start_link(_), do: start_link()
+
+  @doc false
   def start_link, do: GenServer.start_link(__MODULE__, [], name: @name)
 
   @doc false

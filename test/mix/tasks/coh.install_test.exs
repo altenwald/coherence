@@ -545,7 +545,7 @@ defmodule Mix.Tasks.Coh.InstallTest do
         assert [migration] = Path.wildcard("migrations/*_add_coherence_to_user.exs")
 
         assert_file(migration, [
-          "alter table(:accounts_users) do"
+          "alter table(:users) do"
         ])
       end)
     end
